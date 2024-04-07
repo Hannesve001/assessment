@@ -1,0 +1,32 @@
+---
+- name: Install and configure Nginx web server
+  hosts: webserver
+  become: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+
+  tasks:
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+
+    - name: Start Nginx service
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Allow Nginx in UFW
+      ufw:
+        rule: allow
+        name: 'Nginx HTTP'
+
+    - name: Verify Nginx is running
+      command: systemctl is-active nginx
+      register: nginx_status
+      ignore_errors: yes
+
+    - name: Print Nginx status
+      debug:
+        var: nginx_status.stdout

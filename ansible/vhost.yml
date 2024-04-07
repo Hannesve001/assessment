@@ -1,0 +1,36 @@
+---
+- name: Configure virtual host on Nginx
+  hosts: webserver
+  become: yes
+
+  tasks:
+    - name: Remove default Nginx configuration
+      file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+
+    - name: Create virtual host configuration
+      template:
+        src: vhost.conf.j2
+        dest: /etc/nginx/sites-available/mywebsite.conf
+
+    - name: Enable virtual host
+      file:
+        src: /etc/nginx/sites-available/mywebsite.conf
+        dest: /etc/nginx/sites-enabled/mywebsite.conf
+        state: link
+
+    - name: Create web root directory
+      file:
+        path: /var/www/html
+        state: directory
+
+    - name: Copy index.html file to webserver
+      copy:
+        src: index.html
+        dest: /var/www/html/index.html
+
+    - name: Reload Nginx
+      service:
+        name: nginx
+        state: reloaded

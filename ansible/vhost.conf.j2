@@ -1,0 +1,11 @@
+server {
+    listen 80;
+    server_name {{ ansible_default_ipv4.address }};
+
+    root /var/www/html;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
